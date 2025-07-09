@@ -1,0 +1,1059 @@
+<?= $this->extend('template/user_template') ?>
+<?= $this->section('main') ?>
+<style>
+    label {
+        margin-bottom: 0px !important;
+        margin-bottom: 1px !important;
+    }
+
+    .Comments::placeholder {
+        color: #e3e3e3;
+    }
+</style>
+
+<!-- inner heading  -->
+<div class="bg-green text-white text-center pt-1 pb-1" style="font-size: 120%;">
+
+    <b> Stage 3 - Technical Interview <?= helper_get_applicant_full_name($ENC_pointer_id); ?></b>
+</div>
+
+<!-- start -->
+<div class="container mt-4 mb-4">
+    <div class="row">
+        <div class="col-md-1"></div>
+
+        <!-- center div  -->
+        <div class="col-md-10 bg-white shadow pb-5">
+
+
+            <div class="rounded p-2 mb-2 bg-warning rounded" style="padding: 30px;">
+
+                <!--<div class="row">-->
+                <h4 class=""><u>Note:</u></h4>
+                <!--<h5 class="text-green text-center mt-4 mb-4" style="font-size: 20px;">EXEMPTION REQUEST:</h5>-->
+                <!--</div>-->
+                <p>Trades Recognition Australia (TRA) recently announced that from 1st March 2023 online Technical Interviews could be conducted in locations not approved by TRA (such as the applicant’s home), should the applicant have extenuating circumstances preventing them from traveling to an <a target="/blank" href="https://attc.org.au/wp-content/uploads/2024/03/ATTC-Assesssment-Location-List_v3.3-1.pdf"><b><u>Approved Assessment Centre (Click here to view the updated list).</u></b></a>
+                </p>
+            </div>
+            <div class=" rounded p-2 mb-2 " style="background-color: #ebebeb;">
+                <h4 class="">Circumstances Considered</h4>
+                <ul>
+                    <li class=""> The applicant will have to take a flight to reach the closest assessment centre.</li>
+                    <li class="">The applicant is located more than three hours’ drive away from the closest assessment centre;</li>
+                    <li class="">The applicant is unable to take any time off due to work obligations; for example, the employer does not grant a leave of absence; (Supporting evidence required)</li>
+                    <li class="">Attending an assessment centre would have a negative financial impact on the applicant (excessive travel expenses, potential income loss, etc.); (Supporting evidence required)</li>
+                    <li class="">The applicant's health prevents them from travelling, and doing so might worsen their condition; (Supporting evidence required)</li>
+                    <li class="">Plumber (General) and Electrician (General) applicants may complete their Technical interviews from home prior to their Practical assessment, provided they have a dependable internet connection.</li>
+                </ul>
+            </div>
+            <!-- Alert on set - Flashdata -->
+            <?= $this->include("alert_box.php") ?>
+            <!--<div class="mt-5" id="card_style">-->
+            <!--    <div class="card-body" style="margin-left:10%">-->
+
+
+            <?php
+            if ($file_uploaded) {
+                // vishal 29-05-2023 change
+                if ($exemption_yes_no == "no") {
+                    $disabled = "disabled";
+                    $button = "disabled";
+                } else {
+                    $disabled = "";
+                    $button = "";
+                }
+
+                $ex_show_show = "";
+            } else {
+                $disabled = "";
+                $button = "";
+
+                $ex_show_show = "display: none";
+            }
+            $disabled_ex = "";
+            if ($preference_location) {
+                if ($file_uploaded_ex) {
+                    $disabled_ex = "disabled";
+                }
+            }
+
+            // vishal 29-05-2023  add
+            if ($file_uploaded) {
+                                        $disabled = "disabled";
+                if ($document_id_ex) {
+                    if ($exemption_yes_no == "yes") {
+                        $button = "disabled";
+                        $disabled_ex = "disabled";
+                    }
+                }
+            }
+
+
+
+            ?>
+
+
+            <form action="" method="post" enctype="multipart/form-data" id="tra_form">
+                <div class="row p-2 mb-2" style="padding: 30px;" <?= $disabled ?>>
+                    <h4 class="text-center p-2" style="font-size: 20px;">
+                        <?php
+                        $user_type = session()->get('account_type');
+                    if ($user_type =="Applicant"){
+                        echo "Based on the above information, do you want to apply for an exemption ?";
+                    }else{
+                        echo "Based on the above information, do you want to apply for an exemption for your client ?";
+                    }?></h4>
+                </div>
+                <div class="form_col row" id="postal_row_fields" style="padding: 10px;" <?= $disabled ?>>
+                    <div class="form_col col-6" style="text-align: end;">
+                        <label class="form_col form-check-label form-control" style="padding-left: 0px; border: 0;">
+                            <?php
+                            //   echo $exemption_yes_no;
+                            if ($exemption_yes_no == "yes") {
+                                // echo "fhfxfb";
+                                $exemption_yes = 'checked';
+                                $disabled_ex_upload = '';
+                            } else {
+                                $exemption_yes = '';
+                                $disabled_ex_upload = "disabled";
+                            }
+                            if ($exemption_yes_no == "no") {
+                                $exemption_no = 'checked';
+                            } else {
+                                $exemption_no = '';
+                            }
+
+                            ?>
+
+                            <input onclick="postal_hide(this.value)" class="form-check-input" type="radio" name="exemption_yes_no" value="yes" <?= $disabled ?> <?= ($exemption_yes)  ?>>
+                            <span>Yes</span>
+                        </label>
+                    </div>
+                    <div class="form_col col-6" style="    text-align: start;">
+                        <label class="form_col form-check-label form-control" for="known_by_any_name" style="margin-left: 15px;    border: 0;">
+                            <input onclick="postal_hide(this.value)" class="form-check-input" type="radio" name="exemption_yes_no" value="no" <?= $disabled ?> <?= ($exemption_no) ?>>
+                            <span>No</span>
+                        </label>
+                    </div>
+                </div>
+                <?php
+                // echo $exemption_yes_no;
+                if ($exemption_yes_no == "yes") {
+                    
+                    $address_div = "display:none";
+                    $is_select_yes = true;
+                    // echo $enroll_stage_4;
+                    if($download_ex_form == 1){
+                        $postal_box = 'display:none';
+                    }else{
+                        $postal_box = '';
+                    }
+                } else {
+                    $postal_box = 'display:none';
+                    $address_div = "";
+                    $is_select_yes =false;
+                }
+                // echo $postal_box;
+                // echo "fhfhfd";
+                // echo $download_ex_form;
+                // exit;
+                if($enroll_stage_4 == 1 || $receipt_number){
+                    $postal_box = 'display:none';
+                    $is_select_yes =false;
+                }
+                // echo $postal_box;
+                ?>
+                <div id="postal_box" style="<?=$postal_box?>">
+                    <div class="row">
+                        <div class='col-12'>
+                            <h4 class="text-center p-2 text-center mt-4 mb-4 bg-warning rounded" style="font-size: 20px;"> 
+                             <?php
+                                 if($user_type =="Applicant"){
+                        echo "Download the exemption request form below which needs to be completed before proceeding.";
+                    }else{
+                        echo "Download the exemption request form below which needs to be completed by the applicant before proceeding.";
+                    }?></h4>
+                        </div>
+                        <div class="" style="text-align: center;">
+                            <a href="<?= base_url('public/backend/ExemptionRequest.pdf') ?>" download="Exemption Request.pdf" class="col-3 btn btn_green_yellow" onclick="__show_Form()">
+                                Download Exemption Form
+                            </a>
+                            <input type="hidden" value="<?=$value_of_download_ex_form?>" id="download_ex_form">
+                        </div>
+                    </div>
+                    <br>
+                    <!--<div class="form_col row bg-warning rounded" style="padding: 30px;">-->
+                    <!--<p>If granted an exemption, the applicant must complete the online Technical Assessment from their country of residence, as shown on their Application Form. If the applicant’s location has changed since submitting the application with ATTC, please notify via email on dilpreet.bagga@attc.org.au with the new address details.</p>-->
+                    <!--</div>-->
+
+                </div>
+                    <?php
+                                    // exit;
+
+                    // echo $exemption_yes_no.$download_ex_form;
+                if ($exemption_yes_no !="") {
+                    if($exemption_yes_no =='yes'){
+                        
+                        if($download_ex_form != 1){
+                                $upload_form = 'display:none';
+                        }else{
+                        $upload_form = "";
+                        }
+                    }else{
+                    $upload_form = "";
+                    }
+                 } else {
+                    $upload_form = 'display:none';
+                }
+                
+                if($enroll_stage_4 == 1 && $exemption_yes_no){
+                    $upload_form = "";
+                }
+// $upload_form = "";
+                // echo $upload_form;
+                
+ ?>
+                <div style="padding-left: 10%;padding-right:10%; <?=$upload_form?>" id="upload_form">
+
+                    <div class="" id="form_data" style="<?=$upload_form?>">
+                        <b>Preferred Interview Location  <?php
+                                                        unset($location["Online"]);
+                                                        // echo "<pre>";
+                                                        // print_r($location);
+                                                        $select_field_disabled = $option_disabled = "";
+                                                        if ($preference_location == "Online (Via Zoom)") {
+                                                            $select_field_disabled = "disabled";
+                                                            $option_disabled = "<option selected>" . $preference_location . "</option>";
+                                                        }
+                                                        ?> <span class="text-danger">*</span></b>
+                        <select id="preference_location" required class="form-select " onchange="get_addresh(this.value)" name="preference_location" <?= $button ?> <?= $select_field_disabled ?>>
+                            <option value="" selected> Select Location</option>
+                            <?php foreach ($location as $key => $value) {  ?>
+
+                                <optgroup label="<?= $key ?>">
+                                    <?php foreach ($value as $key_ => $value_) {
+                                        $selected = "";
+                                        if ($preference_location == $value_['city_name']) {
+                                            $selected = "selected";
+                                        }  ?>
+
+                                        <option value="<?= $value_['city_name'] ?>" <?= $selected ?>><?= $value_['city_name'] ?></option>
+                                    <?php  }  ?>
+
+                                <?php  }
+                            echo $option_disabled;
+
+                                ?>
+
+                        </select>
+                        <!---->
+                        <div class=" rounded mb-3" id="ads_auto" style="<?= $address_div ?>"></div>
+                        <b> Comments </b>
+                        <!-- // vishal 29-05-2023 add  -->
+                        <textarea onchange="save_Preferred_info_()" name="preference_comment" id="preference_comment" class="Comments form-control  mb-3" placeholder="Examples: 
+    * The applicant would need 2 weeks notice for the interview. 
+    * The applicant is currently away, kindly schedule the interview after DD/MM/YYYY."rows="6" class="form-control  disabled__field" name="preference_comment"><?= $preference_comment ?></textarea>
+
+                        <b> TRA Payment Receipt Number <span class="text-danger">*</span> </b>
+                        <!--disabled-->
+                        <input type="number" onchange="save_Preferred_info_()" autocomplete="off" value="<?= $receipt_number ?>" class="form-control  disabled__field mb-3" name="recipt_number" id="recipt_number" required />
+
+                        <b> Payment Date (dd/mm/yyyy) <span class="text-danger">*</span> </b>
+                        <!-- <input type="date" class="form-control mb-3  datepicker  disabled__field" value="" name="payment_date" id="date1" placeholder="dd/mm/yyyy" required=""> <br> -->
+                        <!--<= $disabled ?>-->
+                        <input type="text" autocomplete="off" onchange="save_Preferred_info_()" class="form-control mb-4  datepicker" value="<?= $payment_date ?>" name="payment_date" id="payment_date" placeholder="dd/mm/yyyy" maxlength="10" required="">
+
+                        <?php
+                        if (!$file_uploaded) {
+                            $input = "";
+                        } else {
+                            $input = "disabled";
+                        }
+                        ?>
+
+                        <b>TRA Payment Receipt <span class="text-danger">*</span></b>
+                        <div style="display: flex;">
+                            <div class="col-sm-10">
+                                <input type="file" <?= $input ?> class="form-control " name="recipt" id="file_receipt" required="" accept="application/pdf">
+                                <div class="text-danger">Only :  .pdf</div>
+                            </div>
+                            <!--<div >-->
+                            <?php
+                            $button = "";
+                            // if($exemption_yes_no =='no'){
+                            if ($file_uploaded) {
+                                $button = "disabled";
+                            } else {
+                                $button = "";
+                            }
+
+                            // }
+                            ?>
+                            <div class="col-sm-2">
+                                <button <?= $button ?> class="btn btn_green_yellow  float-end" style="padding-left:10px;padding-right:10px" id="" type="submit">Upload</button>
+                                <!--</div>-->
+                            </div>
+                        </div>
+            </form>
+
+            <?php if ($file_uploaded) { ?>
+                <div style="margin-top: -22px; margin-left: 119px;">
+                    <a href="<?= base_url($document_path . '/' . $document_full_name); ?>" target="/blank">
+                        <?= $document_name ?>
+                    </a>
+                    <a onclick="delete_file(<?= $document_id ?>)" class="text-danger">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
+                </div>
+            <?php } ?>
+
+            <?php
+            $value = "";
+            if ($exemption_yes_no == 'no') {
+                // echo "ghghfg";
+                $value = 'display: none';
+            }
+            if (!$file_uploaded_ex) {
+                $value = 'display: none';
+            }
+            ?>
+            <?php 
+            if($enroll_stage_4 != 1){
+            ?>
+            <div id="exemption_form_file" style="<?= $value ?>">
+                <?php
+                if (!$document_id_ex) {
+                    $exe_input = "";
+                    $button_ex = "";  // vishal 29-05-2023  add
+                } else {
+                    $exe_input = "disabled";
+                    $button_ex = "disabled";  // vishal 29-05-2023  add
+                }
+                //  echo $document_id_ex;
+                // echo $document_id_ex;
+
+                // vishal 29-05-2023   hide code
+                // if ($document_id_ex) {
+                //     $button_ex = "disabled";
+                // } else {
+                //     $button_ex = "";
+                // }
+                // echo $button_ex;
+                ?>
+                <b>Exemption Form <span class="text-danger">*</span></b>
+                <div style="display: flex;">
+                    <div class="col-sm-10">
+                        <input type="file" <?= $exe_input ?> class="form-control " name="file_exemption" id="file_exemption" accept="application/pdf">
+                        <div class="text-danger">Only :  .pdf</div>
+                    </div>
+                    <div class="col-sm-2" >
+                        <a class="btn btn_green_yellow <?= $exe_input ?>  float-end" style="padding-left:10px;padding-right:10px" id="" onclick="exeption_form()">Upload</a>
+                    </div>
+                </div>
+                <?php
+                // echo "hgdhghgfh";
+                // print_r($document_id_ex);
+                if ($document_id_ex) { ?>
+                    <div style="margin-left: 119px;margin-top: -22px;">
+                        <a href="<?= base_url($document_path_ex . '/' . $document_full_name_ex); ?>" target="/blank">
+                            <?= $document_name_ex ?>
+                        </a>
+                        <a onclick="delete_file(<?= $document_id_ex ?>)" class="text-danger">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </div>
+                <?php } ?>
+            </div>
+            <?php 
+            }
+            ?>
+            <!-- Comment Basic END -->
+            <div class="major_class">
+            <?php 
+            $is_extra_image_checker = true;
+            foreach($comment_store_documents as $comment_store_document){
+                $docs = [];
+                $disabled = "";
+                if($comment_store_document["document_id"] == 0){
+                    $is_extra_image_checker = false;
+                }
+                if($comment_store_document["document_id"] != 0){
+                    $disabled = "disabled";
+                    $docs = find_one_row("documents", "id", $comment_store_document["document_id"]);
+                // print_r($docs->name);
+                }
+                
+            ?>
+            <!-- Make Comment File Uploader here -->
+            <div id="comment_area_<?= $comment_store_document["id"] ?>" style="">
+            <b><?= $comment_store_document["name"] ?> <span class="text-danger">*</span></b>
+                <div style="display: flex;">
+                    <div class="col-sm-10">
+                        <input <?= $disabled ?> type="file" class="form-control " name="comment_files[<?= $comment_store_document["id"] ?>][]" id="comment_file_<?= $comment_store_document["id"] ?>" accept="application/pdf">
+                        <div class="text-danger">Only :  .pdf</div>
+                    </div>
+                    <div class="col-sm-2">
+                        <?php 
+                        if($disabled){
+                            ?>
+                            <a type="button" class="btn btn_green_yellow float-end disabled" style="padding-left:10px;padding-right:10px">Upload</a>
+                            <?php
+                        }
+                        else{
+                           ?>
+                            <a type="button" class="btn btn_green_yellow float-end" style="padding-left:10px;padding-right:10px" onclick="upload_a_file_comment('#comment_file_<?= $comment_store_document["id"] ?>',<?= $comment_store_document["id"] ?>, <?= $comment_store_document["pointer_id"] ?>)">Upload</a>
+                            <?php
+                        }
+                        ?>
+                        
+                    </div>
+                </div>
+            </div>
+            <?php 
+            if($docs){
+            ?>
+                <div style="margin-left: 119px;margin-top: -22px;">
+                    <a href="<?= base_url()."/".$docs->document_path."/".$docs->document_name ?>" target="/blank">
+                        <?= $docs->name ?>
+                    </a>
+                    <a onclick="delete_file_using_comment(<?= $comment_store_document["id"] ?>,<?= $docs->id ?>)" class="text-danger">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
+                </div>
+            <?php
+            }
+            ?>
+            
+            <!-- END Make Comment File Uploader here -->
+            <?php 
+            }
+            ?>
+            </div>
+            <!-- END -->
+        </div>
+    </div>
+</div>
+<?php
+$show_check_box = false;
+$sub_buton = "disabled";
+if ($document_id) {
+    if ($exemption_yes_no == "no") {
+        $show_check_box = true;
+        $sub_buton = "";
+    } else {
+        if ($document_id_ex) {
+            $show_check_box = true;
+                $sub_buton = "";
+        }
+    }
+    if($enroll_stage_4){
+         $show_check_box = true;
+        $sub_buton = "";
+
+    }
+    
+    
+    
+}
+
+
+if($is_extra_image_checker == false){
+    $sub_buton = "disabled";
+}
+
+?>
+<?php if ($show_check_box) { ?>
+    <div class="mt-1" style="margin-left:10%">
+        <!--<form action="" method="post" id="s3_submit_stage">-->
+            <div class="form-check " style="margin-left:-30px;  margin-top: 30px;">
+                <input class="form-check-input" type="checkbox" id="all_check" required />
+                <label class="form-check-label" for="all_check">
+                    I understand &amp; agree that once I submit the documents, I will not be able to remove or change these documents.
+                </label>
+            </div>
+            <!--<a href="<?= base_url('user/view_application/' . $ENC_pointer_id) ?>" class="btn btn_yellow_green" style="margin-left:35%;" id="back_btn" onclick="history.back()"> Back</a>-->
+            <!--<a class="btn btn_green_yellow" style="margin-left:1%;" onclick="validateForm()">Submit</a>-->
+        <!--</form>-->
+    </div>
+<?php } ?>
+
+<div class="text-center" style="padding: 30px;">
+    <a href="<?= base_url('user/view_application/' . $ENC_pointer_id) ?>" id="cancel" class="btn btn_yellow_green back_btn_id">Back</a>
+    <a href="<?= base_url('user/view_application/' . $ENC_pointer_id) ?>" type="submit" class="btn btn_green_yellow" id="action_validation_btn">Save & Exit</a>
+    <button type="submit" id="next" <?=$sub_buton?> class="btn btn_yellow_green" id="action_validation_btn_submit" onclick="backend_data()">Submit</button>
+    <!--<a href="<?= base_url('user/view_application/' . $ENC_pointer_id) ?>" id="cancel" class="btn btn_yellow_green " <?= $button ?>>Next</a>-->
+</div>
+
+</div>
+
+
+
+<!-- -----------------table---------------- -->
+
+<!--  onsubmit="return validateForm()" -->
+
+
+</div>
+
+<!--    <?php if (!$file_uploaded) { ?>-->
+<!--        <br>-->
+<!--        <br>-->
+<!--        <div class="mt-4" style="margin-left:10%">-->
+<!--            <a href="<?= base_url('user/view_application/' . $ENC_pointer_id) ?>" class="btn btn_yellow_green" style="margin-left:35%;     padding-left: 20px !important;-->
+<!--padding-right: 20px !important;" id="back_btn" onclick="history.back()"> Back</a>-->
+<!--        </div>-->
+<!--        <br> <br>-->
+<!--        <br> <br>-->
+<!--        <br>-->
+<!--    <?php } ?>-->
+
+</div>
+</div>
+<style>
+    #loader_img {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        pointer-events: none;
+    }
+
+    #cover-spin {
+        position: fixed;
+        width: 100%;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background-color: rgba(251, 251, 251, 0.6);
+        z-index: 9999;
+        display: none;
+    }
+</style>
+<div id="cover-spin" style="display: none;">
+    <div id="loader_img">
+        <img src="https://attc.aqato.com.au/public/assets/image/admin/loader.gif" style="width: 100px; height:auto">
+    </div>
+</div>
+<?= $this->endSection() ?>
+
+<!---------- custom_script -->
+<?= $this->section('custom_script') ?>
+<script>
+    // jQuery('#next').addClass('disabled');
+    
+    function delete_file_using_comment(comment_id, document_id){
+        
+        custom_alert_popup_show(header = '', body_msg = "Are you sure you want to delete this file?", close_btn_text = 'No', close_btn_css = 'btn-danger', other_btn = true, other_btn_name = 'Yes', other_btn_class = 'btn_green_yellow', other_btn_id = 'delete_pop_btn_small_1');
+        $("#delete_pop_btn_small_1").click(function() {
+            // console.log("Here");
+            // return;
+            if (custom_alert_popup_close('delete_pop_btn_small_1')) {
+                // console.log(documnet_id);
+                // return;
+                $('#cover-spin').show();
+                $.ajax({
+                    url: "<?= base_url("user/comments/deleteDocumentAndComments") ?>",
+                    type: "POST",
+                    data: {
+                        comment_id,
+                        document_id,
+                    },
+                    success: function(res) {
+                        //  window.location.reload();
+                        $('#cover-spin').hide();
+
+                        window.location.reload();
+
+
+                        console.log("---------------------------" + res);
+
+                    }
+
+                    //  dataType: "JSON",
+                    // success: function(data) {
+                    //     $('#cover-spin').hide();
+                    //     if (data["response"] == true) {
+                    //             window.location.reload();
+                    //     } else {
+                    //         alert(data["msg"]);
+                    //     }
+                    //  },            
+                });
+            }
+        });
+        
+        
+    }
+    
+    function upload_a_file_comment(file_select, id, pointer_id){
+        // console.log(file);
+        var fd = new FormData(); 
+        var files = $(file_select)[0].files[0];
+        // console.log(files);
+        
+        if(files == undefined){
+            $(file_select)[0].setCustomValidity("Please Upload a file.");
+            $(file_select)[0].reportValidity();
+            return;
+        }
+        
+        $('#cover-spin').show();
+        
+        fd.append('file', files); 
+        fd.append('id', id); 
+        fd.append('pointer_id', pointer_id); 
+        
+        $.ajax({ 
+            url: '<?= base_url("user/stage_3/receipt_upload/comment_file_upload") ?>',
+            type: 'post',
+            data: fd,
+            contentType: false,
+            processData: false,
+            success: function(response){
+                console.log(response);
+                if(response){
+                    $('#cover-spin').hide();
+                    location.reload();
+                }
+            }, 
+        });
+    }
+    
+    
+    function __show_Form() {
+        $('#postal_box').hide();
+        console.log("dfgdfh");
+        $("#upload_form").show();
+        $('#form_data').show();
+        var download_ex_form = 1;
+        var exemption_yes_no = document.querySelector('input[name="exemption_yes_no"]:checked');
+         $.ajax({
+            'url': '<?= base_url('user/stage_3/exemption_data/' . $ENC_pointer_id) ?>',
+            'type': 'post',
+            'data': {
+                'download_ex_form': 1,
+                'exemption_yes_no': exemption_yes_no.value,
+                'preference_location': $('#preference_location').val(),
+                'preference_comment': $('#preference_comment').val(),
+                'recipt_number' :$('#recipt_number').val(),
+                'payment_date' :$('#payment_date').val(),
+            },
+             success: function(data) {
+            // console.log($('#payment_date').val());
+            // return;
+                 let inputElement = document.getElementById("download_ex_form");
+                inputElement.value = 1;
+
+                // console.log("---------------------------" + data);
+            }
+        });
+       
+    }
+    
+      // save on change 
+    function save_Preferred_info_() {
+        var exemption_yes_no = document.querySelector('input[name="exemption_yes_no"]:checked');
+        // console.log(exemption_yes_no.value);
+        // return;    
+        // var selectedValue = selectedGender.value;
+
+        var download_ex_form = document.getElementById("download_ex_form").value;
+
+        $.ajax({
+            'url': '<?= base_url('user/stage_3/exemption_data/' . $ENC_pointer_id) ?>',
+            'type': 'post',
+            'data': {
+                'download_ex_form': download_ex_form,
+                'exemption_yes_no': exemption_yes_no.value,
+                'preference_location': $('#preference_location').val(),
+                'preference_comment': $('#preference_comment').val(),
+                'recipt_number' :$('#recipt_number').val(),
+                'payment_date' :$('#payment_date').val(),
+            },
+            success: function(data) {
+            // console.log($('#payment_date').val());
+            // return;
+                // $("#download_ex_form").
+                let inputElement = document.getElementById("download_ex_form");
+                inputElement.value = 1;
+
+                // console.log("---------------------------" + data);
+            }
+        });
+    }
+
+
+// Mohsin Coding Here 
+    // //     var enroll_stage4 = < ($enroll_stage_4) ? $enroll_stage_4 : 0 ?>;
+    // //     console.log(enroll_stage4);
+    ////   if(enroll_stage4 == 1){
+    ////           $("#upload_form").show(); 
+    // //         }
+    // //         else{
+                
+    //         //   $("#postal_box").hide(); 
+            // // }
+        // 
+
+    function postal_hide(data) {
+        
+        var value = data;
+        var inputElement = document.getElementById("preference_comment");
+        
+        // Check For P1 - E/P
+        
+        
+        
+        // End
+        if (data == 'yes') {
+                        //   $("#upload_form").show(); 
+
+            // vishal 29-05-2023 
+            $('#preference_comment').attr('placeholder', `Examples: 
+    * The applicant would need 2 weeks notice for the interview. 
+    * The applicant is currently away, kindly schedule the interview after DD/MM/YYYY.`);
+
+            // $('#file_exemption').prop('required', true);
+
+            $("#upload_form").hide();
+            $("#ads_auto").hide();
+            // 
+             var enroll_stage4 = <?= ($enroll_stage_4) ? $enroll_stage_4 : 0 ?>;
+             console.log(enroll_stage4);
+            if(enroll_stage4 == 1){
+               $("#upload_form").show(); 
+            }
+            // 
+            if(enroll_stage4 != 1){
+                document.getElementById('postal_box').style.display = 'block';
+            }else{
+                document.getElementById('postal_box').style.display = 'none';
+            }
+            // console.log("Here");
+            $('#preference_location').append(`<option>Online (Via Zoom)</option>`);
+            // $('#preference_location option[value=Online (Via Zoom)]').attr('selected','selected');
+            $('#preference_location').val('Online (Via Zoom)');
+            $("#preference_location").attr("disabled", true);
+            if(enroll_stage4 != 1){
+                $("#file_exemption").attr("required");
+                $("#exemption_form_file").show();
+
+            }
+            
+            //  inputElement.placeholder = "Examples: * Applicant is travelling from WA to the NSW centre, so he/she would need 2 weeks notice for the interview. * The applicant is currently away, kindly schedule the interview after DD/MM/YYYY.";
+
+        } else {
+            $("#postal_box").hide();
+                //   $postal_box = 'display:none';
+
+            // vishal 29-05-2023 
+            $('#preference_comment').attr('placeholder', `Examples:  
+    * The applicant would need 2 weeks notice for the interview. 
+    * The applicant is currently away, kindly schedule the interview after DD/MM/YYYY.`);
+    document.getElementById('postal_box').style.display = 'none';
+
+            $("#upload_form").show();
+            $("#exemption_form_file").hide();
+            $("#file_exemption").removeAttr("required");
+            $("#preference_location option:contains('Online (Via Zoom')").remove();
+            $("#preference_location").removeAttr("disabled", false);
+
+            //   inputElement.placeholder = "New Placeholder";
+
+
+        }
+
+        document.getElementById('form_data').style.display = 'block';
+
+        $.ajax({
+            'url': '<?= base_url('user/stage_3/exemption_data/' . $ENC_pointer_id) ?>',
+            'type': 'post',
+            'data': {
+                'exemption_yes_no': data,
+                'preference_location': $('#preference_location').val(),
+                'preference_comment': $('#preference_comment').val(),
+                'recipt_number' :$('#recipt_number').val(),
+                'payment_date' :$('#payment_date').val(),
+            },
+            success: function(data) {
+            }
+            
+        });
+        
+    }
+
+    function validateForm() {
+       
+       
+        //  working
+
+                var userValidation = $("#all_check")[0].checkValidity();
+        
+                let isChecked = $('#all_check').is(':checked');
+        
+                if (!isChecked) {
+        
+                    $("#all_check")[0].setCustomValidity("Please check the checkbox.");
+        
+                    $('#all_check')[0].reportValidity();
+        
+                    return false;
+                }
+        
+                custom_alert_popup_show(header = '', body_msg = "Are you sure you want to submit Stage 3 Application?", close_btn_text = 'No', close_btn_css = 'btn-danger', other_btn = true, other_btn_name = 'Yes', other_btn_class = 'btn_green_yellow', other_btn_id = 'AJDSAKAJLD');
+                // check Btn click
+                $("#AJDSAKAJLD").click(function() {
+                    // if return true 
+                    if (custom_alert_popup_close('AJDSAKAJLD')) {
+                        $('#cover-spin').show(0);
+                         $.ajax({
+                            'url': '<?= base_url('user/stage_3/submit_/' . $ENC_pointer_id) ?>',
+                            'type': 'post',
+                            success: function(data) {
+                                    $('#cover-spin').hide(0);
+                                    window.location = "<?= base_url('user/view_application/' . $ENC_pointer_id) ?>";
+                            }
+                            
+                        });
+       
+                                            // window.location = "<?= base_url('user/stage_3/submit_/' . $ENC_pointer_id) ?>";
+                        // $("#s3_submit_stage").submit();
+                        return true;
+                    } else {
+                        $('#cover-spin').hide(0);
+                        return false;
+        
+                    }
+                });
+
+    }
+
+function backend_data(){
+     $.ajax({
+            'url': '<?= base_url('user/stage_3/valication/' . $ENC_pointer_id) ?>',
+            'type': 'post',
+            success: function(result) {
+                result = JSON.parse(result);
+                if (result["error"] == "1") {
+                    custom_alert_popup_show(header = '', body_msg = result["msg"], close_btn_text = 'Ok', close_btn_css = 'btn-danger', other_btn = false);
+                }
+
+              if (result["error"] == "0") {
+
+
+                        validateForm();
+
+                
+
+                }
+
+            },
+
+            beforeSend: function(xhr) {
+
+                console.log('file_validate Start.......');
+
+            }
+
+        });
+
+    }
+
+
+    //on change
+    function get_addresh(value) {
+console.log(value);
+        $('#ads_auto').html('');
+        $.ajax({
+            'url': '<?= base_url('user/stage_3/get_addresh_') ?>',
+            'type': 'post',
+            'data': {
+                'city_name': value,
+            },
+            success: function(data) {
+                // Check for No Change
+                
+                if(value == ""){
+                    // Get Varaible -> 
+                    console.log("Empty Field");
+                    // End
+                    return;
+                }
+                console.log("Here");
+                
+                // 
+                if (value != "") {
+                    data = JSON.parse(data);
+                    html = '<div class="row"> <div class="col-3"><b>Venue :</b> </div> <div class="col-9"> ' + data['venue'] + '</div>  <div class="col-3"><b> Address : </b> </div>  <div class="col-9">  ' + data['office_address'] + '</div></div><br> <b >  Are you sure you want to choose the above venue for the technical interview ? </b>  ';
+                    custom_alert_popup_show(header = '', html, close_btn_text = 'Cancel', close_btn_css = 'btn-danger', other_btn = true, other_btn_name = 'Confirm', other_btn_class = 'btn-success', other_btn_id = 'ouiouhasdasd' , cancel_id="close_alert");
+                    $("#ouiouhasdasd").click(function() {
+                        if (custom_alert_popup_close('ouiouhasdasd')) {
+                            $("#ads_auto").show();
+
+                            $('#ads_auto').html('<div class="mt-3 p-2" style="background-color:#ffc107;border-radius:5px" > <b> Address : </b> <br>' + data['office_address'] + '</div>');
+                            save_Preferred_info_();
+                        }
+                    });
+                    $('#close_alert').click(function() {
+                          if (custom_alert_popup_close('ouiouhasdasd')) {
+                            $('#cover-spin').show();
+                            window.location.reload();
+                         }
+                    });
+                    
+                } else {
+                    save_Preferred_info_();
+
+                }
+            }
+
+        });
+    }
+
+    function exeption_form() {
+
+        var fileInput = document.getElementById("file_exemption");
+
+        if (!$("#file_exemption").val()) {
+            custom_alert_popup_show(header = '', body_msg = "Please select a file.", close_btn_text = 'Ok', close_btn_css = 'btn-danger', other_btn = false, other_btn_name = 'Yes', other_btn_class = 'btn_green_yellow', other_btn_id = 'delete_pop_btn');
+            return false;
+        }
+
+        var file = fileInput.files[0];
+
+        var formData = new FormData();
+        formData.append("file_exemption", file);
+
+        $('#cover-spin').show();
+    
+
+        $.ajax({
+            'url': '<?= base_url('user/stage_3/exemption_form/' . $ENC_pointer_id) ?>',
+            'type': 'POST',
+            'data': formData,
+            'contentType': false,
+            'processData': false,
+            success: function(data) {
+                console.log(data);
+                $('#cover-spin').hide();
+                    // console.log("SOS");
+                    // return;
+                window.location.reload();
+                // console.log("---------------------------" + data);
+            }
+        });
+        
+        // return;
+    }
+
+  
+    // on load page check old data -- back here mohsin
+    <?php if (isset($preference_location) && !empty($preference_location) && $enroll_stage_4 == 0) { ?>
+        $('#ads_auto').html('');
+        $.ajax({
+            'url': '<?= base_url('user/stage_3/get_addresh_') ?>',
+            'type': 'post',
+            'data': {
+                'city_name': '<?= $preference_location ?>',
+            },
+            success: function(data) {
+                data = JSON.parse(data);
+                $('#ads_auto').html('<div class="mt-3 p-2" style="background-color:#ffc107;border-radius:5px" > <b> Address : </b> <br>' + data['office_address'] + '</div>');
+            }
+        });
+    <?php } ?>
+
+
+
+
+    $(".datepicker").datepicker({
+        dateFormat: "dd/mm/yy",
+        maxDate: new Date()
+    });
+
+    //  function loader(){
+    //     $('#cover-spin').show();
+    //       setTimeout(() => {
+    //                   $('#cover-spin').hide();
+    //         },10000); 
+    //  }
+
+    var pointer_id = "<?= $ENC_pointer_id ?>";
+
+
+    $(document).ready(function() {
+        console.log("ready");
+        $("#tra_form").submit(function(e) {
+            e.preventDefault();
+            $("#loader-please-wait").show();
+            var formData = new FormData($(this)[0]);
+            $('#cover-spin').show();
+            $.ajax({
+                method: "POST",
+                url: "<?= base_url('user/stage_3/receipt_upload_action') ?>/" + pointer_id,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    // return;
+                    $('#cover-spin').hide();
+                    window.location.reload();
+
+                    // console.log("---------------------------" + res);
+
+                }
+            })
+        });
+    });
+
+
+    function delete_file(documnet_id) {
+        custom_alert_popup_show(header = '', body_msg = "Are you sure you want to delete this file?", close_btn_text = 'No', close_btn_css = 'btn-danger', other_btn = true, other_btn_name = 'Yes', other_btn_class = 'btn_green_yellow', other_btn_id = 'delete_pop_btn');
+        $("#delete_pop_btn").click(function() {
+            // console.log("Here");
+            // return;
+            if (custom_alert_popup_close('delete_pop_btn')) {
+                // console.log(documnet_id);
+                // return;
+                $('#cover-spin').show();
+                $.ajax({
+                    url: "<?= base_url("user/stage_3/receipt_upload_delete") ?>/" + pointer_id + "/" + documnet_id,
+                    type: "POST",
+                    success: function(res) {
+                        //  window.location.reload();
+                        $('#cover-spin').hide();
+
+                        window.location.reload();
+
+
+                        console.log("---------------------------" + res);
+
+                    }
+
+                    //  dataType: "JSON",
+                    // success: function(data) {
+                    //     $('#cover-spin').hide();
+                    //     if (data["response"] == true) {
+                    //             window.location.reload();
+                    //     } else {
+                    //         alert(data["msg"]);
+                    //     }
+                    //  },            
+                });
+            }
+        });
+    }
+    
+    
+    <?php 
+        $session = session();
+        $isShowCommentBox = $session->isShowCommentBox;
+        $session->remove("isShowCommentBox");
+    ?>
+    var isShowPopup = '<?= isset($isShowCommentBox) ? $isShowCommentBox : '' ?>';
+    setTimeout(() => {
+        getTheCurrentStageComment("<?= $ENC_pointer_id ?>","stage_2",isShowPopup);
+    },200);
+</script>
+
+<?= $this->endSection() ?>
